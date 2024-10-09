@@ -1,15 +1,19 @@
-// import { useState } from 'react'
-import './App.css'
+import {
+  createBrowserRouter,
+  RouterProvider,
+} from "react-router-dom";
+import { MainPage } from "./pages/index.tsx";
 
-function App() {
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <MainPage />,
+  }
+]);
 
+
+export default function App() {
   return (
-    <>
-      <div>
-        <h1>Iniciando o projeto</h1>
-      </div>
-    </>
+    <RouterProvider router={router} />
   )
 }
-
-export default App
