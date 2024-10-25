@@ -22,7 +22,16 @@ export default {
         // -20 -20 120 107,114,128,18%
         'customCardShadow': '15px 15px 60px 10px rgba(107, 114, 128, 0.10), -20px -20px 60px 10px rgba(107, 114, 128, 0.10)',
       
-      }
+      },
+      screens: {
+        'xs': '480px',      // Para telas muito pequenas
+        'sm': '640px',      // Modifica o comportamento do 'sm'
+        'md': '768px',      // Modifica o comportamento do 'md'
+        'lg': '1024px',     // Modifica o 'lg'
+        'xl': '1280px',     // Para telas maiores
+        '2xl': '1536px',    // Define novo breakpoint
+        'custom': '1900px', // Adiciona um breakpoint específico
+      },
     },
   },
   plugins: [],
