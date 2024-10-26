@@ -1,13 +1,9 @@
+// components/CategoryDropdown.tsx
 import React, { useState, useEffect } from 'react';
 import IconRenderer from './IconRenderer';
 import * as Icons from 'lucide-react';
-
-interface Category {
-  id: string;
-  name: string;
-  color: { hex: string };
-  icon: { name: string };
-}
+import { useCategory } from '../hooks/useCategory';
+import { Category } from '../types';
 
 interface CategoryDropdownProps {
   userId: string;
@@ -15,8 +11,8 @@ interface CategoryDropdownProps {
 
 const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ userId }) => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const { selectedCategory, setCategory } = useCategory();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -33,12 +29,12 @@ const CategoryDropdown: React.FC<CategoryDropdownProps> = ({ userId }) => {
   }, [userId]);
 
   const handleSelect = (category: Category) => {
-    setSelectedCategory(category);
+    setCategory(category);
     setIsOpen(false);
   };
 
   return (
-    <div className="relative w-full max-w-[280px]">
+    <div className="relative max-w-[280px]">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between max-h-12 h-12 w-52 px-4 py-2.5 bg-white border border-gray-200 rounded-full hover:bg-gray-50"

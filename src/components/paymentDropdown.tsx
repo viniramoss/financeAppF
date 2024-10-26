@@ -23,7 +23,6 @@ const PaymentMethodDropdown: React.FC<PaymentMethodDropdownProps> = ({ userId })
         setLoading(true);
         setError(null);
         
-        console.log('Fazendo requisição para:', `https://financeapp-xtt2.onrender.com/method/${userId}`);
         const response = await fetch(`https://financeapp-xtt2.onrender.com/method/${userId}`);
         
         if (!response.ok) {
@@ -31,21 +30,18 @@ const PaymentMethodDropdown: React.FC<PaymentMethodDropdownProps> = ({ userId })
         }
         
         const data = await response.json();
-        console.log('Resposta completa da API:', data);
 
-        // Verifica se data.method existe (no singular)
+
+
         if (data && data.method) {
-          console.log('Métodos encontrados:', data.method);
           setMethods(data.method);
         }
-        // Verifica se data.methods existe (no plural)
+
         else if (data && data.methods) {
-          console.log('Métodos encontrados:', data.methods);
           setMethods(data.methods);
         }
-        // Se os dados estiverem diretamente no array
+
         else if (Array.isArray(data)) {
-          console.log('Métodos encontrados:', data);
           setMethods(data);
         }
         else {
@@ -54,7 +50,7 @@ const PaymentMethodDropdown: React.FC<PaymentMethodDropdownProps> = ({ userId })
       } catch (error) {
         console.error('Erro detalhado:', error);
         setError(error instanceof Error ? error.message : 'Erro ao carregar métodos de pagamento');
-        setMethods([]); // Reseta os métodos em caso de erro
+        setMethods([]);
       } finally {
         setLoading(false);
       }
@@ -85,7 +81,7 @@ const PaymentMethodDropdown: React.FC<PaymentMethodDropdownProps> = ({ userId })
   }
 
   return (
-    <div className="relative w-full max-w-[280px]">
+    <div className="relative max-w-[280px]">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between w-52 max-h-12 h-12 px-4 py-2.5 bg-white border border-gray-200 rounded-full hover:bg-gray-50"
