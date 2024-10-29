@@ -6,6 +6,11 @@ export interface Category {
     icon: { name: string };
 }
 
+export interface Method {
+    id: string,
+    name: string
+}
+
 // export interface Transaction {
 //     name: string;
 //     description: string;
