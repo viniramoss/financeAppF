@@ -1,50 +1,24 @@
-import { Wallet, Minus, Plus } from "lucide-react";
+import { Wallet, Minus} from "lucide-react";
 import ReactECharts from 'echarts-for-react';
 import { EChartsOption } from 'echarts';
-import CategoryDropdown from '../components/categoryDropdown';
-import PaymentMethodDropdown from '../components/paymentDropdown';
+
 import { useColor } from '../hooks/useColor';
-import { useCategory } from '../hooks/useCategory';
-import { useMethod } from '../hooks/useMethod';
-import IconRenderer from '../components/IconRenderer';
-import { useState } from "react";
+import CardLayout from "../components/cardlayout";
+import TransactionForm from "../components/transactionForm";
+
+
 
 export function MainPage() {
   const { colors, loading } = useColor();
-  const { selectedCategory } = useCategory();
-  const { selectedMethod } = useMethod();
-  const [transactionType, setTransactionType] = useState<'income' | 'expense' | null>(null);
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
 
-  const handleTitleChange = (t: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(t.target.value)
-  }  
-  const handleDescriptionChange = (d: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(d.target.value)
-  }
 
-  const handleSelectedType = (type: 'income' | 'expense') => {
-    setTransactionType(type);
-  }
+
 
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  const methodName = selectedMethod?.name;
-  const categoryName = selectedCategory?.name;
-
-  const handleSubmit = () => {
-    console.log({
-      categoryName,
-      methodName,
-      transactionType,
-      title,
-      description
-    })
-  }
 
   const data = [
     { value: 1048, name: 'Manutenção', itemStyle: { color: colors['3ed1d80b-c0e4-44dd-a1c8-97f222a6a1c6'] } },
@@ -91,7 +65,7 @@ export function MainPage() {
     ]
   };
 
-  const uid = `4377e641-b8cf-4141-8c2d-59e3fa12ed92`;
+
 
   return (
     <div className="h-screen max-h-screen overflow-hidden bg-slate-100 ">
@@ -102,64 +76,20 @@ export function MainPage() {
             <Minus className="relative top-1.5" />
             <Minus className="relative bottom-1.5" />
           </span>
-          </div>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="absolute top-12">
-            <path fill="#a3a3a3" fillOpacity="1" d="M0,24L26.7,32C53.3,40,107,56,160,54C213.3,52,267,32,320,32C373.3,32,427,52,480,50.7C533.3,49,587,24,640,28C693.3,32,747,64,800,84C853.3,104,907,112,960,108C1013.3,104,1067,88,1120,73.3C1173.3,60,1227,48,1280,50.7C1333.3,52,1387,68,1413,76L1440,80L1440,0L1413.3,0C1386.7,0,1333,0,1280,0C1226.7,0,1173,0,1120,0C1066.7,0,1013,0,960,0C906.7,0,853,0,800,0C746.7,0,693,0,640,0C586.7,0,533,0,480,0C426.7,0,373,0,320,0C266.7,0,213,0,160,0C106.7,0,53,0,27,0L0,0Z"></path>
-          </svg>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" className="absolute top-12">
+          <path fill="#a3a3a3" fillOpacity="1" d="M0,24L26.7,32C53.3,40,107,56,160,54C213.3,52,267,32,320,32C373.3,32,427,52,480,50.7C533.3,49,587,24,640,28C693.3,32,747,64,800,84C853.3,104,907,112,960,108C1013.3,104,1067,88,1120,73.3C1173.3,60,1227,48,1280,50.7C1333.3,52,1387,68,1413,76L1440,80L1440,0L1413.3,0C1386.7,0,1333,0,1280,0C1226.7,0,1173,0,1120,0C1066.7,0,1013,0,960,0C906.7,0,853,0,800,0C746.7,0,693,0,640,0C586.7,0,533,0,480,0C426.7,0,373,0,320,0C266.7,0,213,0,160,0C106.7,0,53,0,27,0L0,0Z"></path>
+        </svg>
 
         <div className="flex-grow flex flex-col items-center justify-center p-4">
-          <div className=" custom:mt-[-20vh] xl:mt-[-20vh] w-full max-w-4xl h-auto rounded-3xl bg-neutral-100 shadow-customCardShadow xl:p-12 custom:p-16 pt-0 custom:pb-10 relative flex flex-col justify-center items-center">
-            <div className="w-full xl:hidden custom:block custom:h-64 xl:mt-[-2vh]">
-              <ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
-            </div>
 
-            <h2 className="text-center mt-0 text-md font-serif">Add your INCOMES/EXPENSES below</h2>
-            <div className="flex justify-center gap-4 mt-2">
-              <button 
-                className={`bg-zinc-200 ${transactionType === "income" ? `border-green-500` : `border-none`} border-2 px-4 py-2 text-sm rounded-xl`}
-                onClick={() => handleSelectedType("income")}
-              >INCOMES
-              </button>
-              <button 
-                className={`bg-zinc-200 ${transactionType === "expense" ? `border-red-500` : `border-none`} border-2 px-4 py-2 text-sm rounded-xl`}
-                onClick={() => handleSelectedType("expense")}
-                >EXPENSES
-              </button>
+          <CardLayout> 
+            <div className="w-full xl:hidden custom:block custom:h-64 xl:mt-[-2vh]">
+                <ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
             </div>
-            <input
-              type="text"
-              placeholder="Type the name of your income/expense:"
-              className="w-4/5 mt-4 p-2 border rounded-xl text-sm "
-              onChange={handleTitleChange}
-            />
-            <textarea
-              name="description"
-              placeholder="Add a description here"
-              className="w-4/5 mt-2 p-2 border rounded-xl h-20 resize-none text-sm"
-              value={description}
-              onChange={handleDescriptionChange}
-            ></textarea>
-            <div className="flex justify-around space-x-8 mt-4">
-              <button className="bg-white min-w-28 p-5 pt-1 pb-1 border border-zinc-200 border- rounded-xl">Sumary</button>
-              <PaymentMethodDropdown userId={uid} />
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
-              style={{
-                backgroundColor: selectedCategory ? selectedCategory.color.hex : 'rgb(228, 228, 231)'
-              }}>
-                
-                {selectedCategory && (
-                  <IconRenderer iconName={selectedCategory.icon.name} />
-                )}
-            </div>
-              <CategoryDropdown userId={uid} />
-              <button 
-              className="bg-white min-w-28 p-5 pt-1 pb-1 border border-zinc-200 border- rounded-xl flex justify-center items-center"
-              onClick={() => handleSubmit()}
-              >
-                <Plus className="text-gray-500" />
-              </button>
-            </div>
-          </div>
+            <TransactionForm />
+          </CardLayout>
+
         </div>
       </div>
     </div>
