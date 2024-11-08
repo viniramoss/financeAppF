@@ -6,6 +6,7 @@ import PaymentMethodDropdown from '../components/paymentDropdown';
 import { useCategory } from '../hooks/useCategory';
 import { useMethod } from '../hooks/useMethod';
 
+
 const TransactionForm: React.FC = () => {
     const uid = `4377e641-b8cf-4141-8c2d-59e3fa12ed92`;
 
@@ -14,13 +15,14 @@ const TransactionForm: React.FC = () => {
     const { selectedMethod } = useMethod();
     const [transactionType, setTransactionType] = useState<'income' | 'expense' | null>(null);
     const [title, setTitle] = useState<string>('');
+    const [amount, setAmount] = useState<string>('');
     const [description, setDescription] = useState<string>('');
 
 
     const methodName = selectedMethod?.name;
     const categoryName = selectedCategory?.name;
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         console.log({
         categoryName,
         methodName,
@@ -28,11 +30,51 @@ const TransactionForm: React.FC = () => {
         title,
         description
         })
+        if(!transactionType || !selectedCategory || !selectedMethod || !title || !amount) {
+          alert('Preencha todos os campos')
+          return
+        } 
+        const data = {
+          name: title,
+          amount: parseFloat(amount),
+          date: new Date(),
+          description,
+          type: transactionType.toUpperCase(),
+          paymentCategoryName: selectedCategory.name,
+          paymentMethodName: selectedMethod.name,
+        }
+
+          fetch(`https://financeapp-xtt2.onrender.com/transactions/${uid}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          })
+          .then(response => {
+            if (!response.ok) {
+              return response.text().then((text) => {
+                throw new Error(text);
+              });
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log("Transação criada com sucesso:", data);
+            alert("Transação criada com sucesso!");
+          })
+          .catch(error => {
+            console.error("Erro ao conectar com o servidor:", error.message);
+            alert("Erro ao conectar com o servidor");
+          });
     }
 
 
     const handleTitleChange = (t: React.ChangeEvent<HTMLInputElement>) => {
         setTitle(t.target.value)
+    }    
+    const handleAmountChange = (t: React.ChangeEvent<HTMLInputElement>) => {
+        setAmount(t.target.value)
     }  
     const handleDescriptionChange = (d: React.ChangeEvent<HTMLTextAreaElement>) => {
         setDescription(d.target.value)
@@ -88,6 +130,13 @@ const TransactionForm: React.FC = () => {
               >
                 <Plus className="text-gray-500" />
               </button>
+            </div>
+            <div>
+              <input 
+                className='w-48 p-2 mt-4 border rounded-xl text-sm'
+                placeholder='Value of transaction'
+                onChange={handleAmountChange}
+              />
             </div>
 
         </div>

@@ -11,13 +11,21 @@ export interface Method {
     name: string
 }
 
-// export interface Transaction {
-//     name: string;
-//     description: string;
-//     type: 'INCOME' | 'EXPENSE';
-//     paymentMethod: string;
-//     categoryId: string;
-//     categoryName: string;
-//     categoryColor: string;
-//     categoryIcon: string;
-// }
+export type TransactionType = {
+    id: string;
+    amount: number;
+    name: string;
+    type: "INCOME" | "EXPENSE";
+    created_at: string;
+    update_at?: string;
+    paymentCategory?: {
+      id: string;
+      name: string;
+      colorId: string;
+      iconId: string;
+    };
+    paymentMethod?: {
+      id: string;
+      name: string;
+    };
+  };

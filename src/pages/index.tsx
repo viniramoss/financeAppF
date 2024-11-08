@@ -1,29 +1,46 @@
 import ReactECharts from 'echarts-for-react';
 import { EChartsOption } from 'echarts';
-
 import { useColor } from '../hooks/useColor';
 import CardLayout from "../components/cardlayout";
 import TransactionForm from "../components/transactionForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MenuDrop from '../components/menuDrop';
-
+import { TransactionType } from "../types"
+const uid = '4377e641-b8cf-4141-8c2d-59e3fa12ed92'
 
 
 export function MainPage() {
   const { colors, loading } = useColor();
   const [isOpen, setIsOpen] = useState(false);
+  const [transaction,setTransaction] = useState<TransactionType[]>([])
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      fetch (`https://financeapp-xtt2.onrender.com/user/${uid}`)
+      .then (response => response.json())
+      .then (data => setTransaction(data.user.transaction))
+      .catch (error => console.error(error))
+    }
+
+    fetchTransactions()
+  }, [])
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  const data = [
-    { value: 1048, name: 'Manutenção', itemStyle: { color: colors['3ed1d80b-c0e4-44dd-a1c8-97f222a6a1c6'] } },
-    { value: 1048.80, name: 'Mercado', itemStyle: { color: colors['9f183114-6889-46b2-ad44-67552a69f60d'] } },
-    { value: 580, name: 'Transporte', itemStyle: { color: colors['7f9c7e0e-d762-460f-a1a4-df026a7f517e'] } },
-    { value: 484, name: 'Animais', itemStyle: { color: colors['30b2bd12-e95c-4388-80ae-ff4ac3b9d0ba'] } },
-    { value: 300, name: 'Roupas', itemStyle: { color: colors['b5cb198f-3bca-4643-8205-13ea0298f236'] } }
-  ];
+  console.log("Colors:", colors);
+  console.log("Transaction:", transaction);
+  console.log("Category ID:", transaction.map(t => t.paymentCategory?.colorId));
+  
+
+  const data = transaction.map(t => ({
+    value: t.amount,
+    name: t.name,
+    itemStyle: {
+      color: t.paymentCategory? colors[t.paymentCategory.colorId] : '#fff'
+    }
+  }));
 
   const option: EChartsOption = {
     tooltip: {
