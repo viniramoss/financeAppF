@@ -1,5 +1,10 @@
-import React, { useState } from 'react';
-import { Plus } from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import ReactECharts from 'echarts-for-react';
+import { TransactionType } from "../types"
+import { useColor } from '../hooks/useColor';
+
+import { EChartsOption } from 'echarts';
+import { Loader2, Plus } from "lucide-react";
 import IconRenderer from '../components/IconRenderer';
 import CategoryDropdown from '../components/categoryDropdown';
 import PaymentMethodDropdown from '../components/paymentDropdown';
@@ -13,26 +18,82 @@ interface TransactionFormProps {
 const TransactionForm: React.FC<TransactionFormProps> = ({ onTransactionAdded }) => {
     const uid = `4377e641-b8cf-4141-8c2d-59e3fa12ed92`;
 
-    
+    const { colors, loading } = useColor();
     const { selectedCategory } = useCategory();
     const { selectedMethod } = useMethod();
     const [transactionType, setTransactionType] = useState<'income' | 'expense' | null>(null);
     const [title, setTitle] = useState<string>('');
     const [amount, setAmount] = useState<string>('');
     const [description, setDescription] = useState<string>('');
+    const [transaction,setTransaction] = useState<TransactionType[]>([])
 
+    const fetchTransactions = async () => {
+      fetch (`https://financeapp-xtt2.onrender.com/user/${uid}`)
+      .then (response => response.json())
+      .then (data => setTransaction(data.user.transaction))
+      .catch (error => console.error(error))
+    }
+    useEffect(() => {
+      fetchTransactions()
+    }, [])
+  
+    if (loading) {
+      return( 
+          <div className='w-screen h-screen bg-white/10 backdrop-blur-lg flex justify-center items-center'>
+            <Loader2 className="animate-spin text-gray-500" size={24} />
+          </div>
+        )
+    }
 
-    // const methodName = selectedMethod?.name;
-    // const categoryName = selectedCategory?.name;
+    const expenses = transaction.filter(e => e.type === "EXPENSE");
+
+    const data = expenses.map(t => ({
+      value: t.amount,
+      name: t.name,
+      itemStyle: {
+        color: t.paymentCategory? colors[t.paymentCategory.colorId] : '#fff'
+      }
+    }));
+  
+    const option: EChartsOption = {
+      tooltip: {
+        trigger: 'item',
+        formatter: (params) => {
+          if (typeof params === 'object' && 'name' in params && 'value' in params) {
+            const total = data.reduce((sum, item) => sum + item.value, 0);
+            const percentage = ((params.value as number) / total * 100).toFixed(2);
+            return `${params.name}: R$ ${params.value} (${percentage}%)`;
+          }
+          return '';
+        }
+      },
+      series: [
+        {
+          name: 'Access From',
+          type: 'pie',
+          radius: ['35%', '65%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 5,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          label: { show: false },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 14,
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: { show: false },
+          data,
+        }
+      ]
+    };
+
 
     const handleSubmit = async () => {
-        // console.log({
-        // categoryName,
-        // methodName,
-        // transactionType,
-        // title,
-        // description
-        // })
         if(!transactionType || !selectedCategory || !selectedMethod || !title || !amount) {
           alert('Preencha todos os campos')
           return
@@ -93,6 +154,9 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onTransactionAdded })
     }
     return (
         <div className='flex flex-col justify-center items-center'>
+            <div className="w-full xl:hidden custom:block custom:h-64 xl:mt-[-2vh]">
+                <ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
+            </div>
             <h2 className="text-center mt-0 text-md font-serif">Add your INCOMES/EXPENSES below</h2>
             <div className="flex justify-center gap-4 mt-2">
               <button 

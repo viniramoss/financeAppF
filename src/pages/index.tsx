@@ -1,89 +1,15 @@
-import ReactECharts from 'echarts-for-react';
-import { EChartsOption } from 'echarts';
-import { useColor } from '../hooks/useColor';
 import CardLayout from "../components/cardlayout";
-import TransactionForm from "../components/transactionForm";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import MenuDrop from '../components/menuDrop';
-import { TransactionType } from "../types"
-import { Loader2 } from 'lucide-react';
-const uid = '4377e641-b8cf-4141-8c2d-59e3fa12ed92'
+
+import { DynamicCard } from '../components/dynamicCard';
+
 
 
 export function MainPage() {
-  const { colors, loading } = useColor();
+
   const [isOpen, setIsOpen] = useState(false);
-  const [transaction,setTransaction] = useState<TransactionType[]>([])
 
-  const fetchTransactions = async () => {
-    fetch (`https://financeapp-xtt2.onrender.com/user/${uid}`)
-    .then (response => response.json())
-    .then (data => setTransaction(data.user.transaction))
-    .catch (error => console.error(error))
-  }
-  useEffect(() => {
-
-    fetchTransactions()
-  }, [])
-
-  if (loading) {
-    return( 
-        <div className='w-screen h-screen bg-white/10 backdrop-blur-lg flex justify-center items-center'>
-          <Loader2 className="animate-spin text-gray-500" size={24} />
-        </div>
-      )
-  }
-
-  // console.log("Colors:", colors);
-  // console.log("Transaction:", transaction);
-  // console.log("Category ID:", transaction.map(t => t.paymentCategory?.colorId));
-  
-  const expenses = transaction.filter(e => e.type === "EXPENSE");
-
-  const data = expenses.map(t => ({
-    value: t.amount,
-    name: t.name,
-    itemStyle: {
-      color: t.paymentCategory? colors[t.paymentCategory.colorId] : '#fff'
-    }
-  }));
-
-  const option: EChartsOption = {
-    tooltip: {
-      trigger: 'item',
-      formatter: (params) => {
-        if (typeof params === 'object' && 'name' in params && 'value' in params) {
-          const total = data.reduce((sum, item) => sum + item.value, 0);
-          const percentage = ((params.value as number) / total * 100).toFixed(2);
-          return `${params.name}: R$ ${params.value} (${percentage}%)`;
-        }
-        return '';
-      }
-    },
-    series: [
-      {
-        name: 'Access From',
-        type: 'pie',
-        radius: ['35%', '65%'],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 5,
-          borderColor: '#fff',
-          borderWidth: 2
-        },
-        label: { show: false },
-        emphasis: {
-          label: {
-            show: true,
-            fontSize: 14,
-            fontWeight: 'bold'
-          }
-        },
-        labelLine: { show: false },
-        data,
-      }
-    ]
-  };
 
   return (
     <div className="h-screen max-h-screen overflow-hidden bg-slate-100 ">
@@ -113,10 +39,7 @@ export function MainPage() {
         <div className="flex-grow flex flex-col items-center justify-center p-4">
 
           <CardLayout> 
-            <div className="w-full xl:hidden custom:block custom:h-64 xl:mt-[-2vh]">
-                <ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
-            </div>
-            <TransactionForm onTransactionAdded={fetchTransactions} />
+            <DynamicCard />
           </CardLayout>
 
         </div>

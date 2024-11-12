@@ -29,3 +29,5 @@ export type TransactionType = {
       name: string;
     };
   };
+
+export type CardType  = 'transaction' | 'recurring' | 'reminder' | 'charts' | 'categories' | 'payment';
