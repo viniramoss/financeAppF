@@ -6,8 +6,11 @@ import PaymentMethodDropdown from '../components/paymentDropdown';
 import { useCategory } from '../hooks/useCategory';
 import { useMethod } from '../hooks/useMethod';
 
+interface TransactionFormProps {
+  onTransactionAdded: () => void;
+}
 
-const TransactionForm: React.FC = () => {
+const TransactionForm: React.FC<TransactionFormProps> = ({ onTransactionAdded }) => {
     const uid = `4377e641-b8cf-4141-8c2d-59e3fa12ed92`;
 
     
@@ -19,17 +22,17 @@ const TransactionForm: React.FC = () => {
     const [description, setDescription] = useState<string>('');
 
 
-    const methodName = selectedMethod?.name;
-    const categoryName = selectedCategory?.name;
+    // const methodName = selectedMethod?.name;
+    // const categoryName = selectedCategory?.name;
 
     const handleSubmit = async () => {
-        console.log({
-        categoryName,
-        methodName,
-        transactionType,
-        title,
-        description
-        })
+        // console.log({
+        // categoryName,
+        // methodName,
+        // transactionType,
+        // title,
+        // description
+        // })
         if(!transactionType || !selectedCategory || !selectedMethod || !title || !amount) {
           alert('Preencha todos os campos')
           return
@@ -61,11 +64,16 @@ const TransactionForm: React.FC = () => {
           })
           .then(data => {
             console.log("Transação criada com sucesso:", data);
-            alert("Transação criada com sucesso!");
+            // alert("Transação criada com sucesso!");
+            setTitle('');
+            setAmount('');
+            setDescription('');
+            setTransactionType(null);
+            onTransactionAdded();
           })
           .catch(error => {
             console.error("Erro ao conectar com o servidor:", error.message);
-            alert("Erro ao conectar com o servidor");
+            // alert("Erro ao conectar com o servidor");
           });
     }
 

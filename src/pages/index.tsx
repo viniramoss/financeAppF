@@ -6,6 +6,7 @@ import TransactionForm from "../components/transactionForm";
 import { useEffect, useState } from "react";
 import MenuDrop from '../components/menuDrop';
 import { TransactionType } from "../types"
+import { Loader2 } from 'lucide-react';
 const uid = '4377e641-b8cf-4141-8c2d-59e3fa12ed92'
 
 
@@ -14,27 +15,32 @@ export function MainPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [transaction,setTransaction] = useState<TransactionType[]>([])
 
+  const fetchTransactions = async () => {
+    fetch (`https://financeapp-xtt2.onrender.com/user/${uid}`)
+    .then (response => response.json())
+    .then (data => setTransaction(data.user.transaction))
+    .catch (error => console.error(error))
+  }
   useEffect(() => {
-    const fetchTransactions = async () => {
-      fetch (`https://financeapp-xtt2.onrender.com/user/${uid}`)
-      .then (response => response.json())
-      .then (data => setTransaction(data.user.transaction))
-      .catch (error => console.error(error))
-    }
 
     fetchTransactions()
   }, [])
 
   if (loading) {
-    return <div>Loading...</div>;
+    return( 
+        <div className='w-screen h-screen bg-white/10 backdrop-blur-lg flex justify-center items-center'>
+          <Loader2 className="animate-spin text-gray-500" size={24} />
+        </div>
+      )
   }
 
-  console.log("Colors:", colors);
-  console.log("Transaction:", transaction);
-  console.log("Category ID:", transaction.map(t => t.paymentCategory?.colorId));
+  // console.log("Colors:", colors);
+  // console.log("Transaction:", transaction);
+  // console.log("Category ID:", transaction.map(t => t.paymentCategory?.colorId));
   
+  const expenses = transaction.filter(e => e.type === "EXPENSE");
 
-  const data = transaction.map(t => ({
+  const data = expenses.map(t => ({
     value: t.amount,
     name: t.name,
     itemStyle: {
@@ -110,7 +116,7 @@ export function MainPage() {
             <div className="w-full xl:hidden custom:block custom:h-64 xl:mt-[-2vh]">
                 <ReactECharts option={option} style={{ width: '100%', height: '100%' }} />
             </div>
-            <TransactionForm />
+            <TransactionForm onTransactionAdded={fetchTransactions} />
           </CardLayout>
 
         </div>
